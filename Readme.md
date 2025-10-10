@@ -21,7 +21,6 @@ docker-compose -f staging-docker-compose.yaml up -d
 # inside backend container
 
 ```bash
-alembic init alembic
 alembic revision --autogenerate -m "create jihate,woulate,amalate_jamaate,comments,reactions tables"
 alembic upgrade head
 

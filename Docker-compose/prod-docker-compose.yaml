@@ -20,7 +20,7 @@ services:
     build:
       context: ..
       dockerfile: Docker/prod.Dockerfile
-    image: prod/genz-backend:0.21
+    image: prod/genz-backend:0.26
     env_file:
       - ../.envs/.api
       - ../.envs/.postgres
@@ -37,9 +37,6 @@ services:
       - |
         cd /code
         uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload --log-level debug --log-config=logging.yml
-    volumes:
-      - genzdata:/code
-
   celery-worker:
     build:
       context: ..

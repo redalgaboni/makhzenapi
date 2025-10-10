@@ -21,7 +21,7 @@ docker-compose -f staging-docker-compose.yaml up -d
 # inside backend container
 
 ```bash
-alembic revision --autogenerate -m "create jihate,woulate,amalate_jamaate,comments,reactions tables"
+alembic revision --autogenerate -m "create users,jihate,woulate,amalate_jamaate,comments,reactions tables"
 alembic upgrade head
 
 # Import reference data

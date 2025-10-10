@@ -20,7 +20,7 @@ services:
     build:
       context: ..
       dockerfile: Docker/prod.Dockerfile
-    image: prod/genz-backend:0.26
+    image: prod/genz-backend:0.1
     env_file:
       - ../.envs/.api
       - ../.envs/.postgres
@@ -36,12 +36,13 @@ services:
       - -c
       - |
         cd /code
-        uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload --log-level debug --log-config=logging.yml
+        uvicorn backend.main:app --host 0.0.0.0 --port 8000 --log-level info --log-config=logging.yml
+      #--reload
   celery-worker:
     build:
       context: ..
       dockerfile: Docker/prod.Dockerfile
-    image: prod/genz-celery-worker:0.19
+    image: prod/genz-celery-worker:0.1
     env_file:
       - ../.envs/.api
       - ../.envs/.postgres

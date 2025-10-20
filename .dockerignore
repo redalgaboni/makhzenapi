@@ -1,0 +1,12 @@
+.env*
+
+# Ignore Certbot account data
+certbot/conf/accounts/
+
+# Also ignore other unnecessary files
+.git
+.gitignore
+.github/
+Docker-compose/
+*.md
+

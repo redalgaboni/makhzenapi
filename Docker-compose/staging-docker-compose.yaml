@@ -1,0 +1,92 @@
+version: '3.8'
+name: genz-staging
+services:
+  db:
+    image: postgres:17.6
+    restart: unless-stopped
+    env_file:
+      - ../.envs/.postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - genz-network
+
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.34.1
+    #restart: unless-stopped
+    networks:
+      - genz-network
+
+  backend:
+    build:
+      context: ..
+      dockerfile: Docker/staging.Dockerfile
+    image: staging/genz-backend:0.30
+    #restart: unless-stopped
+    env_file:
+      - ../.envs/.api
+      - ../.envs/.postgres
+    ports:
+      - "9000:9000"
+    depends_on:
+      - db
+      - dragonfly
+    networks:
+      - genz-network
+    command:
+      - /bin/bash
+      - -c
+      - |
+        cd /code
+        uvicorn backend.main:app --host 0.0.0.0 --port 9000 --reload --log-level info --log-config=logging.yml
+    volumes:
+      - genzdata:/code
+
+  celery-worker:
+    build:
+      context: ..
+      dockerfile: Docker/staging.Dockerfile
+    image: staging/genz-celery-worker:0.30
+    #restart: unless-stopped
+    env_file:
+      - ../.envs/.api
+      - ../.envs/.postgres
+    depends_on:
+      - db
+      - dragonfly
+    networks:
+      - genz-network
+    command: celery -A backend.app.workers.celery_app worker --loglevel=info
+    volumes:
+      - genzdata:/code
+
+  celery-beat:
+    build:
+      context: ..
+      dockerfile: Docker/staging.Dockerfile
+    image: staging/genz-celery-beat:0.30
+    #restart: unless-stopped
+    env_file:
+      - ../.envs/.api
+      - ../.envs/.postgres
+    depends_on:
+      - db
+      - dragonfly
+    networks:
+      - genz-network
+    command: celery -A backend.app.workers.celery_app beat --loglevel=info
+    volumes:
+      - genzdata:/code
+
+volumes:
+  genzdata:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /Users/redaer/Documents/WORK/00_YACODATA/02_ALBAB/makhzenapi
+  postgres_data:
+
+networks:
+  genz-network:
+    driver: bridge

@@ -1,0 +1,76 @@
+version: '3.8'
+name: genz-prod
+services:
+  db:
+    image: postgres:17.6
+    restart: unless-stopped
+    env_file:
+      - ../.envs/.postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - genz-network
+
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.34.1
+    networks:
+      - genz-network
+
+  backend:
+    build:
+      context: ..
+      dockerfile: Docker/prod.Dockerfile
+    image: prod/genz-backend:0.1
+    env_file:
+      - ../.envs/.api
+      - ../.envs/.postgres
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - dragonfly
+    networks:
+      - genz-network
+    command:
+      - /bin/bash
+      - -c
+      - |
+        cd /code
+        uvicorn backend.main:app --host 0.0.0.0 --port 8000 --log-level info --log-config=logging.yml
+      #--reload
+  celery-worker:
+    build:
+      context: ..
+      dockerfile: Docker/prod.Dockerfile
+    image: prod/genz-celery-worker:0.1
+    env_file:
+      - ../.envs/.api
+      - ../.envs/.postgres
+    depends_on:
+      - db
+      - dragonfly
+    networks:
+      - genz-network
+    command: celery -A backend.app.workers.celery_app worker --loglevel=info
+
+  celery-beat:
+    build:
+      context: ..
+      dockerfile: Docker/prod.Dockerfile
+    image: prod/genz-celery-beat:0.19
+    env_file:
+      - ../.envs/.api
+      - ../.envs/.postgres
+    depends_on:
+      - db
+      - dragonfly
+    networks:
+      - genz-network
+    command: celery -A backend.app.workers.celery_app beat --loglevel=info
+
+volumes:
+  postgres_data:
+
+networks:
+  genz-network:
+    driver: bridge

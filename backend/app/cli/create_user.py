@@ -4,7 +4,7 @@ from backend.app.db.session import SessionLocal
 from backend.app.db.models import User
 from backend.app.core.security import get_password_hash
 
-def create_user(email: str, username: str, full_name: str, password: str):
+def create_user(email: str, username: str, full_name: str, password: str, is_admin: bool):
     db = SessionLocal()
     try:
         # Check if user exists
@@ -18,7 +18,8 @@ def create_user(email: str, username: str, full_name: str, password: str):
             email=email,
             username=username,
             full_name=full_name,
-            hashed_password=hashed_pw
+            hashed_password=hashed_pw,
+            is_admin=is_admin
         )
         db.add(user)
         db.commit()
@@ -31,6 +32,7 @@ if __name__ == "__main__":
     parser.add_argument("--username", required=True, help="Username")
     parser.add_argument("--email", required=True, help="User email")
     parser.add_argument("--full_name", required=False, help="Full name")
+    parser.add_argument("--is_admin", action='store_true', help="Is Admin",default=False)
     args = parser.parse_args()
 
     password = getpass("Password: ")
@@ -39,4 +41,4 @@ if __name__ == "__main__":
         print("Passwords do not match!")
         exit(1)
 
-    create_user(args.email, args.username, args.full_name, password)
+    create_user(args.email, args.username, args.full_name, password, args.is_admin)

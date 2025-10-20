@@ -29,7 +29,12 @@ python -m backend.app.cli.jihate_import
 python -m backend.app.cli.amalate_jamaate_import
 python -m backend.app.cli.woulate_import
 
-# create random reactions and comments
+# create new user
+python -m backend.app.cli.create_user \
+  --email user3@example.com \
+  --username user3
+
+# create random reactions and comments ( script needs at least 3 different users)
 python -m backend.app.cli.generate_random_reactions_comments
 
 ```

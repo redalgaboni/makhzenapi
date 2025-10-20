@@ -3,6 +3,7 @@ from .base import Base
 from sqlalchemy.sql import func
 from enum import Enum as PyEnum
 
+
 class User(Base):
     __tablename__ = "users"
     
@@ -11,6 +12,7 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     full_name = Column(String)
     hashed_password = Column(String)
+    is_admin = Column(Boolean, default=False)
 
 class Jihate(Base):
     __tablename__ = "jihate"
@@ -83,3 +85,4 @@ class Comment(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     is_deleted = Column(Boolean, default=False)  # Soft delete
+

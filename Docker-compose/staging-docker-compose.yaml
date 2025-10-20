@@ -21,7 +21,7 @@ services:
     build:
       context: ..
       dockerfile: Docker/staging.Dockerfile
-    image: staging/genz-backend:0.21
+    image: staging/genz-backend:0.30
     #restart: unless-stopped
     env_file:
       - ../.envs/.api
@@ -38,7 +38,7 @@ services:
       - -c
       - |
         cd /code
-        uvicorn backend.main:app --host 0.0.0.0 --port 9000 --reload --log-level debug --log-config=logging.yml
+        uvicorn backend.main:app --host 0.0.0.0 --port 9000 --reload --log-level info --log-config=logging.yml
     volumes:
       - genzdata:/code
 
@@ -46,7 +46,7 @@ services:
     build:
       context: ..
       dockerfile: Docker/staging.Dockerfile
-    image: staging/genz-celery-worker:0.19
+    image: staging/genz-celery-worker:0.30
     #restart: unless-stopped
     env_file:
       - ../.envs/.api
@@ -57,12 +57,14 @@ services:
     networks:
       - genz-network
     command: celery -A backend.app.workers.celery_app worker --loglevel=info
+    volumes:
+      - genzdata:/code
 
   celery-beat:
     build:
       context: ..
       dockerfile: Docker/staging.Dockerfile
-    image: staging/genz-celery-beat:0.19
+    image: staging/genz-celery-beat:0.30
     #restart: unless-stopped
     env_file:
       - ../.envs/.api
@@ -73,6 +75,8 @@ services:
     networks:
       - genz-network
     command: celery -A backend.app.workers.celery_app beat --loglevel=info
+    volumes:
+      - genzdata:/code
 
 volumes:
   genzdata:
@@ -80,7 +84,7 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: /Users/redaer/Documents/WORK/00_YACODATA/02_ALBAB/makhzenma
+      device: /Users/redaer/Documents/WORK/00_YACODATA/02_ALBAB/makhzenapi
   postgres_data:
 
 networks:

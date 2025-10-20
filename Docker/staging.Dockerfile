@@ -32,4 +32,5 @@ RUN groupadd -g ${GID} ${GROUP} \
     && useradd -u ${UID} -g ${GROUP} -m ${USER}
 RUN chown -R ${USER}:${GROUP} /code
 
+
 USER genzuser

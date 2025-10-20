@@ -41,3 +41,30 @@ class WoulatDetailResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+class WoulateCreate(BaseModel):
+    
+    full_name: str
+    job_description: str
+    idara: str
+    jiha: Optional[str] = None
+    wilaya: Optional[str] = None
+    amala_jamaa_id: Optional[int] = None
+    amala: Optional[str] = None
+    assignment_date: str
+    assignment_year: int
+    active: bool = True
+
+class WoulateSearchResult(BaseModel):
+    
+    id: int
+    full_name: str
+    job_title: Optional[str] = None
+    job_description: str
+    jiha: str
+    wilaya: str
+    assignment_date: Optional[str] = None
+    assignment_year: Optional[int] = None
+    
+    class Config:
+        from_attributes = True

@@ -37,6 +37,13 @@ python -m backend.app.cli.create_user \
 # create random reactions and comments ( script needs at least 3 different users)
 python -m backend.app.cli.generate_random_reactions_comments
 
+
+# in case of fresh container and DB exists
+DROP TABLE alembic_version;
+alembic revision --autogenerate -m "initial"
+alembic stamp head
+
+alembic revision --autogenerate -m "Add new columns to users table"
 ```
 
 ## Usage

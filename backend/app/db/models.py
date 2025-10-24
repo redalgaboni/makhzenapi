@@ -40,7 +40,7 @@ class Woulate(Base):
     amala_jamaa_id = Column(Integer)
     amala = Column(String)
     active = Column(Boolean, default=True)
-    assignment_date = Column(String) # date of assignment if any
+    assignment_date = Column(String) # date of assignment
     assignment_year = Column(Integer)
 
 class AmalateJamaate(Base):

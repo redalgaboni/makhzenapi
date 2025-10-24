@@ -46,6 +46,7 @@ class WoulateCreate(BaseModel):
     
     full_name: str
     job_description: str
+    job_title: Optional[str] = None
     idara: str
     jiha: Optional[str] = None
     wilaya: Optional[str] = None
@@ -63,8 +64,10 @@ class WoulateSearchResult(BaseModel):
     job_description: str
     jiha: str
     wilaya: str
-    assignment_date: Optional[str] = None
+    amala: str
+    assignment_date: str
     assignment_year: Optional[int] = None
+    active: bool
     
     class Config:
         from_attributes = True

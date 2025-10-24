@@ -21,7 +21,7 @@ services:
     build:
       context: ..
       dockerfile: Docker/staging.Dockerfile
-    image: staging/genz-backend:0.30
+    image: staging/genz-backend:0.34
     #restart: unless-stopped
     env_file:
       - ../.envs/.api
@@ -33,11 +33,11 @@ services:
       - dragonfly
     networks:
       - genz-network
+    entrypoint: ["/entrypoint.sh"]
     command:
       - /bin/bash
       - -c
       - |
-        cd /code
         uvicorn backend.main:app --host 0.0.0.0 --port 9000 --reload --log-level info --log-config=logging.yml
     volumes:
       - genzdata:/code
@@ -46,7 +46,7 @@ services:
     build:
       context: ..
       dockerfile: Docker/staging.Dockerfile
-    image: staging/genz-celery-worker:0.30
+    image: staging/genz-celery-worker:0.31
     #restart: unless-stopped
     env_file:
       - ../.envs/.api
@@ -64,7 +64,7 @@ services:
     build:
       context: ..
       dockerfile: Docker/staging.Dockerfile
-    image: staging/genz-celery-beat:0.30
+    image: staging/genz-celery-beat:0.31
     #restart: unless-stopped
     env_file:
       - ../.envs/.api

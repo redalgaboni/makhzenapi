@@ -1,10 +1,12 @@
 # Project Name
 
-API that contains Makhzen data
+API containing Morocco Makhzen data.
 
 ## Description
 
-This API contains Makhzen data related to Jihate, Wilaya, Amalate/Mukataate, Woulate.
+This API contains Morocco Makhzen data related to Jihate, Wilaya, Amalate/Mukataate, Woulate.
+
+تحتوي واجهة برمجة التطبيقات هذه على بيانات المغرب - المخزن المتعلقة بولاة و عمال مختلف الجهات والولايات والعمالات.
 
 ## Installation
 
@@ -17,19 +19,13 @@ docker-compose -f staging-docker-compose.yaml up -d
 
 ```
 
-- data creation
-# inside backend container
+- data creation : managed by alembic with entrypoint
 
+### Create random reactions data
+
+In backend container:
 ```bash
-alembic revision --autogenerate -m "create users,jihate,woulate,amalate_jamaate,comments,reactions tables"
-alembic upgrade head
-
-# Import reference data
-python -m backend.app.cli.jihate_import
-python -m backend.app.cli.amalate_jamaate_import
-python -m backend.app.cli.woulate_import
-
-# create new user
+# create 3 users at least
 python -m backend.app.cli.create_user \
   --email user3@example.com \
   --username user3
@@ -37,6 +33,16 @@ python -m backend.app.cli.create_user \
 # create random reactions and comments ( script needs at least 3 different users)
 python -m backend.app.cli.generate_random_reactions_comments
 
+```
+
+### In Case of alembic issues while data exists in DB
+
+```bash
+DROP TABLE alembic_version;
+alembic revision --autogenerate -m "initial"
+alembic stamp head
+alembic revision --autogenerate -m "..." #refine tables in case
+alembic upgrade head
 ```
 
 ## Usage

@@ -2,27 +2,35 @@
 set -e
 
 # Wait for PostgreSQL to be ready
-until PGPASSWORD=$POSTGRES_PASSWORD psql -h "$POSTGRES_SERVER" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c '\q'; do
-  echo "⏳ Waiting for PostgreSQL to be ready..."
+echo "Waiting for PostgreSQL to start..."
+until pg_isready -h $POSTGRES_SERVER -p $POSTGRES_PORT -U $POSTGRES_USER; do
+  echo "PostgreSQL is unavailable - sleeping"
   sleep 2
 done
+echo "PostgreSQL is up and running."
 
-# Check if database is already initialized (using lock file)
-if [ ! -f /code/.db_initialized ]; then
-    echo "Initializing database..."
+# Check if the database has been initialized
+ALEMBIC_TABLE_EXISTS=$(psql -h $POSTGRES_SERVER -U $POSTGRES_USER -d $POSTGRES_DB -tAc "SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'alembic_version';")
 
-    # Create Alembic version table
+if [ "$ALEMBIC_TABLE_EXISTS" != "1" ]; then
+    echo "Fresh database detected. Running initial migrations and data imports..."
+    
+    # Run Alembic migrations
+    echo "Running Alembic revision and upgrade..."
+    alembic revision --autogenerate -m "create users,jihate,woulate,amalate_jamaate,comments,reactions tables"
     alembic upgrade head
 
-    # Import reference data
+    # Run data imports
+    echo "Running data import scripts..."
     python -m backend.app.cli.jihate_import
     python -m backend.app.cli.amalate_jamaate_import
     python -m backend.app.cli.woulate_import
 
-    # Create lock file to prevent re-initialization
-    touch /code/.db_initialized
-    echo "Database initialized successfully!"
+    echo "Migrations and initial data imports complete."
 else
-    echo "Database already initialized. Skipping setup."
-    alembic upgrade head
+    echo "Database is already initialized (alembic_version table found). Skipping initial setup."
 fi
+
+# Execute the main command passed to the container
+echo "Starting application..."
+exec "$@"

@@ -20,12 +20,12 @@ services:
     build:
       context: ..
       dockerfile: Docker/prod.Dockerfile
-    image: prod/genz-backend:0.1
+    image: prod/genz-backend:0.2
     env_file:
       - ../.envs/.api
       - ../.envs/.postgres
     ports:
-      - "8000:8000"
+      - "9000:9000"
     depends_on:
       - db
       - dragonfly
@@ -36,13 +36,12 @@ services:
       - -c
       - |
         cd /code
-        uvicorn backend.main:app --host 0.0.0.0 --port 8000 --log-level info --log-config=logging.yml
-      #--reload
+        uvicorn backend.main:app --host 0.0.0.0 --port 9000 --log-level info --log-config=logging.yml
   celery-worker:
     build:
       context: ..
       dockerfile: Docker/prod.Dockerfile
-    image: prod/genz-celery-worker:0.1
+    image: prod/genz-celery-worker:0.2
     env_file:
       - ../.envs/.api
       - ../.envs/.postgres
@@ -57,7 +56,7 @@ services:
     build:
       context: ..
       dockerfile: Docker/prod.Dockerfile
-    image: prod/genz-celery-beat:0.19
+    image: prod/genz-celery-beat:0.2
     env_file:
       - ../.envs/.api
       - ../.envs/.postgres
